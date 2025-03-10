@@ -1,0 +1,111 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block content %}
+<div class="hero-section mb-5">
+    <div id="carouselExampleCaptions" class="carousel slide" data-bs-ride="carousel">
+        <div class="carousel-inner">
+            {% for test in featured_tests|slice:":5" %}
+            <div class="carousel-item {% if forloop.first %}active{% endif %}">
+                <img src="{{ test.thumbnail.url }}" class="d-block w-100" alt="{{ test.title }}">
+                <div class="carousel-caption d-none d-md-block">
+                    <h2>{{ test.title }}</h2>
+                    <p>{{ test.description|truncatewords:20 }}</p>
+                    <a href="{% url 'test_detail' test.slug %}" class="btn btn-primary">테스트 하러가기</a>
+                </div>
+            </div>
+            {% endfor %}
+        </div>
+        <button class="carousel-control-prev" type="button" data-bs-target="#carouselExampleCaptions" data-bs-slide="prev">
+            <span class="carousel-control-prev-icon" aria-hidden="true"></span>
+            <span class="visually-hidden">Previous</span>
+        </button>
+        <button class="carousel-control-next" type="button" data-bs-target="#carouselExampleCaptions" data-bs-slide="next">
+            <span class="carousel-control-next-icon" aria-hidden="true"></span>
+            <span class="visually-hidden">Next</span>
+        </button>
+    </div>
+</div>
+
+<section class="recent-tests mb-5">
+    <div class="d-flex justify-content-between align-items-center mb-3">
+        <h2 class="section-title">😍 최신 심테</h2>
+        <a href="{% url 'test_list' %}" class="btn btn-sm btn-outline-primary">더보기</a>
+    </div>
+    
+    <div class="row row-cols-2 row-cols-md-3 row-cols-lg-6 g-3">
+        {% for test in recent_tests %}
+        <div class="col">
+            <div class="card h-100">
+                <a href="{% url 'test_detail' test.slug %}" class="text-decoration-none">
+                    <img src="{{ test.thumbnail.url }}" class="card-img-top" alt="{{ test.title }}">
+                    <div class="card-body">
+                        <h5 class="card-title">{{ test.title }}</h5>
+                        <div class="d-flex align-items-center">
+                            <svg width="16" height="16" fill="none">
+                                <path fill-rule="evenodd" clip-rule="evenodd" d="M9.593 6.432a.5.5 0 0 0 0-.864L1.085.605a.5.5 0 0 0-.752.431v9.928a.5.5 0 0 0 .752.431l8.508-4.963Z" fill="#75787B"/>
+                            </svg>
+                            <span class="ms-1">{{ test.views }}만</span>
+                        </div>
+                    </div>
+                </a>
+            </div>
+        </div>
+        {% endfor %}
+    </div>
+</section>
+
+<section class="popular-tests mb-5">
+    <div class="d-flex justify-content-between align-items-center mb-3">
+        <h2 class="section-title">🔥 이번주 인기 TOP 12</h2>
+    </div>
+    
+    <div class="row">
+        {% for test in popular_tests %}
+        <div class="col-md-6 mb-3">
+            <a href="{% url 'test_detail' test.slug %}" class="text-decoration-none">
+                <div class="d-flex align-items-center">
+                    <div class="flex-shrink-0 me-3">
+                        <img src="{{ test.thumbnail.url }}" alt="{{ test.title }}" width="75" height="105">
+                    </div>
+                    <div class="flex-grow-1">
+                        <h6 class="mb-1">{{ forloop.counter }}</h6>
+                        <p class="mb-1">{{ test.title }}</p>
+                        <div class="d-flex align-items-center">
+                            <svg width="14" height="14" fill="none">
+                                <path fill-rule="evenodd" clip-rule="evenodd" d="M9.593 6.432a.5.5 0 0 0 0-.864L1.085.605a.5.5 0 0 0-.752.431v9.928a.5.5 0 0 0 .752.431l8.508-4.963Z" fill="#75787B"/>
+                            </svg>
+                            <span class="ms-1">{{ test.views }}만</span>
+                        </div>
+                    </div>
+                </div>
+            </a>
+        </div>
+        {% endfor %}
+    </div>
+</section>
+
+<section class="categories mb-5">
+    <div class="d-flex justify-content-between align-items-center mb-3">
+        <h2 class="section-title">🐝🐝🐝 새롱 시리즈</h2>
+        <a href="{% url 'test_list' %}" class="btn btn-sm btn-outline-primary">더보기</a>
+    </div>
+    
+    <div class="row row-cols-2 row-cols-md-3 row-cols-lg-5 g-4">
+        {% for category in categories %}
+        <div class="col">
+            <a href="{% url 'category_detail' category.slug %}" class="text-decoration-none">
+                <div class="card h-100">
+                    {% if category.image %}
+                    <img src="{{ category.image.url }}" class="card-img-top" alt="{{ category.name }}">
+                    {% endif %}
+                    <div class="card-body text-center">
+                        <h5 class="card-title">{{ category.name }}</h5>
+                    </div>
+                </div>
+            </a>
+        </div>
+        {% endfor %}
+    </div>
+</section>
+{% endblock %}

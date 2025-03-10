@@ -1,0 +1,123 @@
+:root {
+    --primary-color: #FF9800;
+    --secondary-color: #FFC107;
+    --accent-color: #FF5722;
+    --dark-color: #333333;
+    --light-color: #F5F5F5;
+    --gray-color: #75787B;
+}
+
+body {
+    font-family: 'Noto Sans KR', sans-serif;
+    color: var(--dark-color);
+    background-color: #FAFAFA;
+}
+
+/* Header */
+.navbar-brand {
+    font-weight: 700;
+    font-size: 1.5rem;
+}
+
+/* Card styles */
+.card {
+    border-radius: 12px;
+    overflow: hidden;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+    transition: transform 0.3s ease;
+}
+
+.card:hover {
+    transform: translateY(-5px);
+}
+
+.card-img-top {
+    height: 150px;
+    object-fit: cover;
+}
+
+.section-title {
+    font-weight: 700;
+    font-size: 1.5rem;
+    color: var(--dark-color);
+    position: relative;
+    display: inline-block;
+}
+
+/* Hero section */
+.hero-section {
+    margin-top: -1.5rem;
+}
+
+.carousel-item img {
+    height: 350px;
+    object-fit: cover;
+}
+
+.carousel-caption {
+    background-color: rgba(0, 0, 0, 0.6);
+    padding: 20px;
+    border-radius: 10px;
+}
+
+/* Test detail page */
+.test-detail-img {
+    border-radius: 12px;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+}
+
+.test-stat {
+    display: flex;
+    align-items: center;
+    margin-right: 1rem;
+}
+
+.test-stat svg {
+    margin-right: 0.5rem;
+}
+
+/* Test cards */
+.test-card {
+    display: flex;
+    flex-direction: column;
+    height: 100%;
+}
+
+.test-card-img {
+    position: relative;
+}
+
+.test-card-img img {
+    width: 100%;
+    aspect-ratio: 108/150;
+    object-fit: cover;
+    border-radius: 8px;
+}
+
+.bookmark-icon {
+    position: absolute;
+    top: 8px;
+    right: 8px;
+    background-color: white;
+    border-radius: 50%;
+    padding: 5px;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+}
+
+.test-title {
+    font-size: 0.9rem;
+    font-weight: 600;
+    margin: 0.5rem 0;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    display: -webkit-box;
+    -webkit-line-clamp: 2;
+    -webkit-box-orient: vertical;
+}
+
+.test-views {
+    display: flex;
+    align-items: center;
+    font-size: 0.8rem;
+    color: var(--gray-color);
+}
