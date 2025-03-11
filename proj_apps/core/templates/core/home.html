@@ -2,104 +2,71 @@
 {% load static %}
 
 {% block content %}
-<div class="banner-section mb-4">
-    <div class="featured-card border-0">
-        <img src="{% static 'images/banner-placeholder.jpg' %}" alt="슈가슈가 테스트" class="img-fluid rounded-4">
-        <div class="featured-card-overlay rounded-4">
-            <div class="featured-content text-center p-3">
-                <h2 class="card-title">슈가슈가 테스트</h2>
-                <p class="card-text">나와 잘 맞는 애인은?</p>
-                <a href="#" class="btn btn-light btn-sm rounded-pill px-3">테스트 하러가기 →</a>
+<!-- 슬라이드 배너 -->
+<div class="main-banner">
+    <img src="{% static 'images/main-banner.jpg' %}" alt="심리테스트 배너" class="banner-image">
+</div>
+
+<!-- 최신 심테 -->
+<div class="recent-tests">
+    <div class="section-header d-flex justify-content-between align-items-center">
+        <h2 class="section-title">
+            <span class="section-icon">✨</span>최신 심테
+        </h2>
+        <a href="#" class="more-link">더보기</a>
+    </div>
+    
+    <div class="recent-tests-grid">
+        {% for i in "12345678"|make_list %}
+        <div class="test-card">
+            <div class="test-card-img">
+                <img src="{% static 'images/test-placeholder.jpg' %}" alt="테스트 이미지">
+            </div>
+            <div class="test-card-body">
+                <div class="test-title">나만의 귀여운 테스트</div>
+                <div class="view-count">
+                    <svg viewBox="0 0 16 16" fill="none">
+                        <path fill-rule="evenodd" clip-rule="evenodd" d="M9.593 6.432a.5.5 0 0 0 0-.864L1.085.605a.5.5 0 0 0-.752.431v9.928a.5.5 0 0 0 .752.431l8.508-4.963Z" fill="#75787B"/>
+                    </svg>
+                    <span>4.5만</span>
+                </div>
             </div>
         </div>
+        {% endfor %}
     </div>
 </div>
 
-<section class="recent-tests mb-4">
-    <div class="d-flex justify-content-between align-items-center mb-3">
-        <h2 class="section-title">✨ 최신 심테</h2>
-        <a href="{% url 'test_list' %}" class="more-link">더보기</a>
+<!-- 광고 배너 -->
+<div class="ad-banner">
+    <img src="{% static 'images/ad-banner.jpg' %}" alt="광고" width="478" height="100">
+</div>
+
+<!-- 이번주 인기 TOP 12 -->
+<div class="popular-tests">
+    <div class="section-header d-flex justify-content-between align-items-center">
+        <h2 class="section-title">
+            <span class="section-icon">🔥</span>이번주 인기 TOP 12
+        </h2>
     </div>
     
-    <div class="row row-cols-2 row-cols-md-4 g-2">
-        {% for i in "12345"|make_list %}
-        <div class="col">
-            <div class="test-card h-100">
-                <a href="#" class="text-decoration-none">
-                    <div class="test-card-img">
-                        <img src="{% static 'images/test-placeholder.jpg' %}" alt="테스트 이미지" class="img-fluid">
-                    </div>
-                    <div class="test-card-body">
-                        <h5 class="test-title">슈가슈가 테스트</h5>
-                        <div class="test-views">
-                            <svg width="12" height="12" fill="none" class="me-1">
-                                <path fill-rule="evenodd" clip-rule="evenodd" d="M9.593 6.432a.5.5 0 0 0 0-.864L1.085.605a.5.5 0 0 0-.752.431v9.928a.5.5 0 0 0 .752.431l8.508-4.963Z" fill="#75787B"/>
-                            </svg>
-                            <span>4.5만</span>
-                        </div>
-                    </div>
-                </a>
+    <div class="popular-list">
+        {% for i in "1234567"|make_list %}
+        <div class="popular-item">
+            <div class="rank-number">{{ forloop.counter }}</div>
+            <div class="popular-thumb">
+                <img src="{% static 'images/test-placeholder.jpg' %}" alt="테스트 이미지">
+            </div>
+            <div class="popular-info">
+                <div class="popular-title">오징어 테스트</div>
+                <div class="popular-view-count">
+                    <svg width="12" height="12" viewBox="0 0 16 16" fill="none" class="me-1">
+                        <path fill-rule="evenodd" clip-rule="evenodd" d="M9.593 6.432a.5.5 0 0 0 0-.864L1.085.605a.5.5 0 0 0-.752.431v9.928a.5.5 0 0 0 .752.431l8.508-4.963Z" fill="#75787B"/>
+                    </svg>
+                    <span>358.6만</span>
+                </div>
             </div>
         </div>
         {% endfor %}
     </div>
-</section>
-
-<section class="ad-banner my-4">
-    <div class="card border-0 rounded-4 position-relative overflow-hidden">
-        <img src="{% static 'images/ad-placeholder.jpg' %}" alt="광고 배너" class="img-fluid">
-    </div>
-</section>
-
-<section class="popular-tests mb-4">
-    <div class="d-flex justify-content-between align-items-center mb-3">
-        <h2 class="section-title">🔥 이번주 인기 TOP 12</h2>
-    </div>
-    
-    <div class="row row-cols-1 row-cols-md-2 g-2">
-        {% for i in "123456"|make_list %}
-        <div class="col">
-            <a href="#" class="text-decoration-none">
-                <div class="popular-test-item d-flex align-items-center p-2 rounded-3">
-                    <div class="rank-number me-2">{{ forloop.counter }}</div>
-                    <div class="test-thumbnail me-2">
-                        <img src="{% static 'images/test-placeholder.jpg' %}" alt="테스트 이미지" width="50" height="50" class="rounded-2">
-                    </div>
-                    <div class="test-info">
-                        <h6 class="test-item-title mb-0">오정어 테스트</h6>
-                        <div class="test-views small">
-                            <svg width="10" height="10" fill="none" class="me-1">
-                                <path fill-rule="evenodd" clip-rule="evenodd" d="M9.593 6.432a.5.5 0 0 0 0-.864L1.085.605a.5.5 0 0 0-.752.431v9.928a.5.5 0 0 0 .752.431l8.508-4.963Z" fill="#75787B"/>
-                            </svg>
-                            <span>35.8만</span>
-                        </div>
-                    </div>
-                </div>
-            </a>
-        </div>
-        {% endfor %}
-    </div>
-</section>
-
-<section class="categories mb-4">
-    <div class="d-flex justify-content-between align-items-center mb-3">
-        <h2 class="section-title">💖 새롱 시리즈</h2>
-        <a href="{% url 'test_list' %}" class="more-link">더보기</a>
-    </div>
-    
-    <div class="row row-cols-2 row-cols-md-4 g-2">
-        {% for i in "1234"|make_list %}
-        <div class="col">
-            <a href="#" class="text-decoration-none">
-                <div class="category-card h-100">
-                    <img src="{% static 'images/category-placeholder.jpg' %}" class="card-img-top rounded-top" alt="카테고리">
-                    <div class="category-title text-center py-2">
-                        <span>이상형 동물 테스트</span>
-                    </div>
-                </div>
-            </a>
-        </div>
-        {% endfor %}
-    </div>
-</section>
+</div>
 {% endblock %}
