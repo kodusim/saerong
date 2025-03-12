@@ -1,0 +1,250 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block extra_css %}
+<style>
+    .question-container {
+        display: none;
+    }
+    .question-container.active {
+        display: block;
+    }
+    .choice-card {
+        cursor: pointer;
+        margin-bottom: 15px;
+        transition: all 0.3s ease;
+        border: 2px solid transparent;
+    }
+    .choice-card:hover {
+        transform: translateY(-5px);
+        box-shadow: 0 10px 20px rgba(0,0,0,0.1);
+    }
+    .choice-card.selected {
+        border: 2px solid var(--primary-color);
+        background-color: rgba(255, 152, 0, 0.1);
+    }
+    .progress-bar {
+        transition: width 0.5s ease;
+    }
+    .test-info {
+        background-color: #f8f9fa;
+        border-radius: 8px;
+        padding: 12px 20px;
+        margin-bottom: 20px;
+    }
+    .test-title {
+        font-size: 1.8rem;
+        font-weight: 700;
+        margin-bottom: 15px;
+    }
+    .question-text {
+        font-size: 1.3rem;
+        font-weight: 500;
+        margin-bottom: 20px;
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="container py-4">
+    <div class="test-info text-center">
+        <h1 class="test-title">{{ test.title }}</h1>
+        <div class="progress mb-3">
+            <div class="progress-bar bg-primary" role="progressbar" style="width: 0%" id="progress-bar" aria-valuenow="0" aria-valuemin="0" aria-valuemax="100"></div>
+        </div>
+        <p id="question-counter" class="mb-0">질문 1 / {{ selections_count }}</p>
+        <p class="text-muted small mt-2">{{ selections_count }}개의 질문에 모두 답변해주세요.</p>
+    </div>
+
+    <form method="post" id="test-form">
+        {% csrf_token %}
+        
+        {% for question in questions %}
+        <div class="question-container {% if forloop.first %}active{% endif %}" id="question-{{ forloop.counter }}">
+            <div class="card mb-4 shadow-sm">
+                <div class="card-body p-4">
+                    <h3 class="question-text">{{ question.text }}</h3>
+                    
+                    {% if question.image %}
+                    <div class="mb-4 text-center">
+                        <img src="{{ question.image.url }}" alt="질문 이미지" class="img-fluid rounded" style="max-height: 300px;">
+                    </div>
+                    {% endif %}
+                    
+                    <div class="choices-container">
+                        {% for choice in question.choices.all %}
+                        <div class="card choice-card" data-choice-id="{{ choice.id }}" data-question-id="{{ question.id }}">
+                            <div class="card-body">
+                                <div class="row align-items-center">
+                                    {% if choice.image %}
+                                    <div class="col-md-4 text-center">
+                                        <img src="{{ choice.image.url }}" alt="선택지 이미지" class="img-fluid rounded" style="max-height: 150px;">
+                                    </div>
+                                    <div class="col-md-8">
+                                        <h5 class="card-title">{{ choice.text }}</h5>
+                                    </div>
+                                    {% else %}
+                                    <div class="col-12">
+                                        <h5 class="card-title">{{ choice.text }}</h5>
+                                    </div>
+                                    {% endif %}
+                                </div>
+                            </div>
+                        </div>
+                        {% endfor %}
+                    </div>
+                    <input type="hidden" name="question_ids" value="{{ question.id }}">
+                    <input type="radio" name="question_{{ question.id }}" id="question_{{ question.id }}" value="" style="display: none;" required>
+                </div>
+            </div>
+            
+            <div class="d-flex justify-content-between mb-4">
+                {% if not forloop.first %}
+                <button type="button" class="btn btn-outline-secondary prev-question" data-question="{{ forloop.counter }}">
+                    <i class="fas fa-arrow-left me-2"></i> 이전
+                </button>
+                {% else %}
+                <div></div>
+                {% endif %}
+                
+                {% if forloop.counter == selections_count %}
+                <button type="submit" class="btn btn-primary" id="submit-test" disabled>
+                    결과 확인하기 <i class="fas fa-check ms-2"></i>
+                </button>
+                {% else %}
+                <button type="button" class="btn btn-primary next-question" data-question="{{ forloop.counter }}" disabled>
+                    다음 <i class="fas fa-arrow-right ms-2"></i>
+                </button>
+                {% endif %}
+            </div>
+        </div>
+        {% endfor %}
+    </form>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        const questions = document.querySelectorAll('.question-container');
+        const totalQuestions = {{ selections_count }};
+        let currentQuestion = 1;
+        const answers = {};
+        
+        // 선택지 클릭 처리
+        document.querySelectorAll('.choice-card').forEach(card => {
+            card.addEventListener('click', function() {
+                const questionId = this.dataset.questionId;
+                const choiceId = this.dataset.choiceId;
+                
+                // 해당 질문의 모든 선택지 선택 해제
+                document.querySelectorAll(`.choice-card[data-question-id="${questionId}"]`).forEach(c => {
+                    c.classList.remove('selected');
+                });
+                
+                // 현재 선택한 선택지 선택 표시
+                this.classList.add('selected');
+                
+                // 라디오 버튼 값 설정
+                const radioInput = document.querySelector(`input[name="question_${questionId}"]`);
+                radioInput.value = choiceId;
+                
+                // 답변 저장
+                answers[questionId] = choiceId;
+                
+                // 다음/제출 버튼 활성화
+                if (currentQuestion === totalQuestions) {
+                    document.getElementById('submit-test').disabled = false;
+                } else {
+                    const nextBtn = document.querySelector(`.next-question[data-question="${currentQuestion}"]`);
+                    if (nextBtn) {
+                        nextBtn.disabled = false;
+                    }
+                }
+            });
+        });
+        
+        // 다음 버튼 클릭 처리
+        document.querySelectorAll('.next-question').forEach(button => {
+            button.addEventListener('click', function() {
+                const questionNum = parseInt(this.dataset.question);
+                
+                // 현재 질문 숨기기
+                document.getElementById(`question-${questionNum}`).classList.remove('active');
+                
+                // 다음 질문 표시
+                document.getElementById(`question-${questionNum + 1}`).classList.add('active');
+                
+                // 현재 질문 번호 업데이트
+                currentQuestion = questionNum + 1;
+                
+                // 진행 상태 업데이트
+                updateProgress();
+                
+                // 페이지 상단으로 스크롤
+                window.scrollTo({top: 0, behavior: 'smooth'});
+            });
+        });
+        
+        // 이전 버튼 클릭 처리
+        document.querySelectorAll('.prev-question').forEach(button => {
+            button.addEventListener('click', function() {
+                const questionNum = parseInt(this.dataset.question);
+                
+                // 현재 질문 숨기기
+                document.getElementById(`question-${questionNum}`).classList.remove('active');
+                
+                // 이전 질문 표시
+                document.getElementById(`question-${questionNum - 1}`).classList.add('active');
+                
+                // 현재 질문 번호 업데이트
+                currentQuestion = questionNum - 1;
+                
+                // 진행 상태 업데이트
+                updateProgress();
+                
+                // 페이지 상단으로 스크롤
+                window.scrollTo({top: 0, behavior: 'smooth'});
+            });
+        });
+        
+        // 진행 상태 업데이트 함수
+        function updateProgress() {
+            const progressBar = document.getElementById('progress-bar');
+            const questionCounter = document.getElementById('question-counter');
+            
+            const percentage = (currentQuestion / totalQuestions) * 100;
+            progressBar.style.width = `${percentage}%`;
+            progressBar.setAttribute('aria-valuenow', percentage);
+            
+            questionCounter.textContent = `질문 ${currentQuestion} / ${totalQuestions}`;
+            
+            // 현재 질문에 대한 다음 버튼 상태 업데이트
+            const nextBtn = document.querySelector(`.next-question[data-question="${currentQuestion}"]`);
+            if (nextBtn) {
+                const questionId = document.getElementById(`question-${currentQuestion}`).querySelector('.choice-card').dataset.questionId;
+                nextBtn.disabled = !answers[questionId];
+            }
+            
+            // 마지막 질문이면 제출 버튼 상태 업데이트
+            if (currentQuestion === totalQuestions) {
+                const questionId = document.getElementById(`question-${currentQuestion}`).querySelector('.choice-card').dataset.questionId;
+                document.getElementById('submit-test').disabled = !answers[questionId];
+            }
+        }
+        
+        // 폼 제출 전 유효성 검사
+        document.getElementById('test-form').addEventListener('submit', function(e) {
+            const allQuestionsAnswered = Object.keys(answers).length === totalQuestions;
+            
+            if (!allQuestionsAnswered) {
+                e.preventDefault();
+                alert('모든 질문에 답변해주세요.');
+            }
+        });
+        
+        // 초기 진행 상태 설정
+        updateProgress();
+    });
+</script>
+{% endblock %}

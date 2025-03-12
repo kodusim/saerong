@@ -1,0 +1,127 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block extra_css %}
+<meta property="og:title" content="{{ test.title }} - {{ result.title }}">
+<meta property="og:description" content="{{ result.description|truncatechars:150 }}">
+{% if result.image %}
+<meta property="og:image" content="{{ request.scheme }}://{{ request.get_host }}{{ result.image.url }}">
+{% endif %}
+<meta property="og:url" content="{{ share_url }}">
+
+<style>
+    .result-card {
+        border-radius: 15px;
+        box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+        overflow: hidden;
+    }
+    .share-btn {
+        border-radius: 50%;
+        width: 40px;
+        height: 40px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        margin: 0 5px;
+    }
+    .other-result-card {
+        transition: all 0.3s ease;
+    }
+    .other-result-card:hover {
+        transform: translateY(-5px);
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="container py-4">
+    <div class="text-center mb-5">
+        <h1 class="mb-3">{{ test.title }}</h1>
+        <p class="lead">테스트 결과</p>
+    </div>
+
+    <div class="row justify-content-center mb-5">
+        <div class="col-lg-8">
+            <div class="card result-card">
+                <div class="card-body p-4">
+                    <h2 class="card-title text-center mb-4">{{ result.title }}</h2>
+                    
+                    {% if result.image %}
+                    <div class="text-center mb-4">
+                        <img src="{{ result.image.url }}" alt="{{ result.title }}" class="img-fluid rounded" style="max-height: 300px;">
+                    </div>
+                    {% endif %}
+                    
+                    <div class="result-description mb-4">
+                        {{ result.description|linebreaks }}
+                    </div>
+                    
+                    <div class="text-center mt-4">
+                        <h5 class="mb-3">공유하기</h5>
+                        <div class="d-flex justify-content-center">
+                            <a href="https://www.facebook.com/sharer/sharer.php?u={{ share_url|urlencode }}" target="_blank" class="share-btn bg-primary text-white">
+                                <i class="fab fa-facebook-f"></i>
+                            </a>
+                            <a href="https://twitter.com/intent/tweet?text={{ test.title|urlencode }}%20-%20{{ result.title|urlencode }}&url={{ share_url|urlencode }}" target="_blank" class="share-btn bg-info text-white">
+                                <i class="fab fa-twitter"></i>
+                            </a>
+                            <a href="https://www.kakaotalk.com/share?url={{ share_url|urlencode }}" target="_blank" class="share-btn" style="background-color: #FFE812;">
+                                <i class="fas fa-comment"></i>
+                            </a>
+                            <button id="copy-link" class="share-btn bg-secondary text-white border-0">
+                                <i class="fas fa-link"></i>
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    {% if other_results %}
+    <div class="other-results mb-5">
+        <h3 class="text-center mb-4">다른 결과 확인하기</h3>
+        <div class="row row-cols-1 row-cols-md-3 g-4">
+            {% for other in other_results %}
+            <div class="col">
+                <div class="card h-100 other-result-card">
+                    {% if other.image %}
+                    <img src="{{ other.image.url }}" class="card-img-top" alt="{{ other.title }}" style="height: 150px; object-fit: cover;">
+                    {% endif %}
+                    <div class="card-body">
+                        <h5 class="card-title">{{ other.title }}</h5>
+                        <p class="card-text">{{ other.description|truncatechars:100 }}</p>
+                    </div>
+                </div>
+            </div>
+            {% endfor %}
+        </div>
+    </div>
+    {% endif %}
+
+    <div class="text-center mb-5">
+        <h4 class="mb-3">더 많은 테스트 해보기</h4>
+        <a href="{% url 'test_list' %}" class="btn btn-primary">다른 테스트 보기</a>
+        <a href="{% url 'test_detail' test.slug %}" class="btn btn-outline-primary ms-2">이 테스트 다시하기</a>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        // 링크 복사 기능
+        document.getElementById('copy-link').addEventListener('click', function() {
+            const el = document.createElement('textarea');
+            el.value = '{{ share_url }}';
+            document.body.appendChild(el);
+            el.select();
+            document.execCommand('copy');
+            document.body.removeChild(el);
+            
+            // 알림 표시
+            alert('링크가 복사되었습니다!');
+        });
+    });
+</script>
+{% endblock %}
