@@ -1,0 +1,67 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block content %}
+<div class="container">
+    <h1 class="mb-4">심리테스트 목록</h1>
+    
+    <div class="row mb-4">
+        <div class="col-md-8">
+            <form class="d-flex" method="GET" action="{% url 'test_list' %}">
+                <input class="form-control me-2" type="search" placeholder="테스트 검색" name="q" value="{{ query }}">
+                <button class="btn btn-primary" type="submit">검색</button>
+            </form>
+        </div>
+    </div>
+    
+    <div class="row mb-4">
+        <div class="col-12">
+            <h4>카테고리</h4>
+            <div class="d-flex flex-wrap gap-2">
+                {% for category in categories %}
+                <a href="{% url 'category_detail' category.slug %}" class="btn btn-outline-secondary">
+                    {{ category.name }}
+                </a>
+                {% empty %}
+                <p>등록된 카테고리가 없습니다.</p>
+                {% endfor %}
+            </div>
+        </div>
+    </div>
+    
+    <div class="row">
+        {% for test in tests %}
+        <div class="col-md-4 mb-4">
+            <div class="card h-100">
+                <a href="{% url 'test_detail' test.slug %}" class="text-decoration-none">
+                    <img src="{{ test.thumbnail.url }}" class="card-img-top" alt="{{ test.title }}">
+                    <div class="card-body">
+                        <h5 class="card-title">{{ test.title }}</h5>
+                        <p class="card-text">{{ test.description|truncatewords:15 }}</p>
+                        <div class="d-flex justify-content-between align-items-center">
+                            <small class="text-muted">{{ test.category.name }}</small>
+                            <div class="d-flex align-items-center">
+                                <svg width="16" height="16" fill="none">
+                                    <path fill-rule="evenodd" clip-rule="evenodd" d="M9.593 6.432a.5.5 0 0 0 0-.864L1.085.605a.5.5 0 0 0-.752.431v9.928a.5.5 0 0 0 .752.431l8.508-4.963Z" fill="#75787B"/>
+                                </svg>
+                                <span class="ms-1">{{ test.views }}</span>
+                            </div>
+                        </div>
+                    </div>
+                </a>
+            </div>
+        </div>
+        {% empty %}
+        <div class="col-12">
+            <div class="alert alert-info">
+                {% if query %}
+                <p>"{{ query }}" 검색 결과가 없습니다.</p>
+                {% else %}
+                <p>등록된 테스트가 없습니다.</p>
+                {% endif %}
+            </div>
+        </div>
+        {% endfor %}
+    </div>
+</div>
+{% endblock %}

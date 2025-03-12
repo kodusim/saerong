@@ -1,0 +1,50 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block content %}
+<div class="container">
+    <div class="mb-4">
+        <div class="d-flex align-items-center">
+            <h1>{{ category.name }}</h1>
+            <a href="{% url 'test_list' %}" class="btn btn-sm btn-outline-secondary ms-3">모든 테스트 보기</a>
+        </div>
+        {% if category.description %}
+        <p>{{ category.description }}</p>
+        {% endif %}
+    </div>
+    
+    {% if category.image %}
+    <div class="mb-4">
+        <img src="{{ category.image.url }}" alt="{{ category.name }}" class="img-fluid rounded" style="max-height: 200px;">
+    </div>
+    {% endif %}
+    
+    <div class="row">
+        {% for test in tests %}
+        <div class="col-md-4 mb-4">
+            <div class="card h-100">
+                <a href="{% url 'test_detail' test.slug %}" class="text-decoration-none">
+                    <img src="{{ test.thumbnail.url }}" class="card-img-top" alt="{{ test.title }}">
+                    <div class="card-body">
+                        <h5 class="card-title">{{ test.title }}</h5>
+                        <p class="card-text">{{ test.description|truncatewords:15 }}</p>
+                        <div class="d-flex align-items-center">
+                            <svg width="16" height="16" fill="none">
+                                <path fill-rule="evenodd" clip-rule="evenodd" d="M9.593 6.432a.5.5 0 0 0 0-.864L1.085.605a.5.5 0 0 0-.752.431v9.928a.5.5 0 0 0 .752.431l8.508-4.963Z" fill="#75787B"/>
+                            </svg>
+                            <span class="ms-1">{{ test.views }}</span>
+                        </div>
+                    </div>
+                </a>
+            </div>
+        </div>
+        {% empty %}
+        <div class="col-12">
+            <div class="alert alert-info">
+                <p>이 카테고리에 등록된 테스트가 없습니다.</p>
+            </div>
+        </div>
+        {% endfor %}
+    </div>
+</div>
+{% endblock %}

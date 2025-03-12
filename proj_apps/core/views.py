@@ -1,20 +1,29 @@
 from django.shortcuts import render
+from proj_apps.psychotests.models import Test, Category
 
 def home(request):
-    # 실제 데이터가 없는 초기 상태이므로 간단한 컨텍스트만 전달
+    # Get real data from the database instead of hardcoded values
+    featured_tests = Test.objects.filter(featured=True).order_by('-created_at')[:5]
+    recent_tests = Test.objects.order_by('-created_at')[:6]
+    popular_tests = Test.objects.order_by('-views')[:12]
+    categories = Category.objects.order_by('order')[:5]
+    
     context = {
-        'page_title': '홈',
+        'featured_tests': featured_tests,
+        'recent_tests': recent_tests,
+        'popular_tests': popular_tests,
+        'categories': categories,
     }
     return render(request, 'core/home.html', context)
 
 def about(request):
-    context = {
-        'page_title': '소개',
-    }
-    return render(request, 'core/about.html', context)
+    return render(request, 'core/about.html', {})
 
 def contact(request):
-    context = {
-        'page_title': '문의하기',
-    }
+    # 문의 폼 처리 로직
+    if request.method == 'POST':
+        # POST 요청 처리 로직 추가
+        pass
+    
+    context = {}
     return render(request, 'core/contact.html', context)

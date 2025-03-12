@@ -2,71 +2,134 @@
 {% load static %}
 
 {% block content %}
-<!-- 슬라이드 배너 -->
-<div class="main-banner">
-    <img src="{% static 'images/main-banner.jpg' %}" alt="심리테스트 배너" class="banner-image">
+<div class="hero-section mb-5">
+    {% if featured_tests %}
+    <div id="carouselExampleCaptions" class="carousel slide" data-bs-ride="carousel">
+        <div class="carousel-inner">
+            {% for test in featured_tests %}
+            <div class="carousel-item {% if forloop.first %}active{% endif %}">
+                <img src="{{ test.thumbnail.url }}" class="d-block w-100" alt="{{ test.title }}">
+                <div class="carousel-caption d-none d-md-block">
+                    <h2>{{ test.title }}</h2>
+                    <p>{{ test.description|truncatewords:20 }}</p>
+                    <a href="{% url 'test_detail' test.slug %}" class="btn btn-primary">테스트 하러가기</a>
+                </div>
+            </div>
+            {% endfor %}
+        </div>
+        <button class="carousel-control-prev" type="button" data-bs-target="#carouselExampleCaptions" data-bs-slide="prev">
+            <span class="carousel-control-prev-icon" aria-hidden="true"></span>
+            <span class="visually-hidden">Previous</span>
+        </button>
+        <button class="carousel-control-next" type="button" data-bs-target="#carouselExampleCaptions" data-bs-slide="next">
+            <span class="carousel-control-next-icon" aria-hidden="true"></span>
+            <span class="visually-hidden">Next</span>
+        </button>
+    </div>
+    {% else %}
+    <div class="alert alert-info text-center">
+        <p>현재 추천 테스트가 없습니다. 새 테스트를 추가해보세요!</p>
+    </div>
+    {% endif %}
 </div>
 
-<!-- 최신 심테 -->
-<div class="recent-tests">
-    <div class="section-header d-flex justify-content-between align-items-center">
-        <h2 class="section-title">
-            <span class="section-icon">✨</span>최신 심테
-        </h2>
-        <a href="#" class="more-link">더보기</a>
+<section class="recent-tests mb-5">
+    <div class="d-flex justify-content-between align-items-center mb-3">
+        <h2 class="section-title">😍 최신 심테</h2>
+        <a href="{% url 'test_list' %}" class="btn btn-sm btn-outline-primary">더보기</a>
     </div>
     
-    <div class="recent-tests-grid">
-        {% for i in "12345678"|make_list %}
-        <div class="test-card">
-            <div class="test-card-img">
-                <img src="{% static 'images/test-placeholder.jpg' %}" alt="테스트 이미지">
-            </div>
-            <div class="test-card-body">
-                <div class="test-title">나만의 귀여운 테스트</div>
-                <div class="view-count">
-                    <svg viewBox="0 0 16 16" fill="none">
-                        <path fill-rule="evenodd" clip-rule="evenodd" d="M9.593 6.432a.5.5 0 0 0 0-.864L1.085.605a.5.5 0 0 0-.752.431v9.928a.5.5 0 0 0 .752.431l8.508-4.963Z" fill="#75787B"/>
-                    </svg>
-                    <span>4.5만</span>
-                </div>
+    {% if recent_tests %}
+    <div class="row row-cols-2 row-cols-md-3 row-cols-lg-6 g-3">
+        {% for test in recent_tests %}
+        <div class="col">
+            <div class="card h-100">
+                <a href="{% url 'test_detail' test.slug %}" class="text-decoration-none">
+                    <img src="{{ test.thumbnail.url }}" class="card-img-top" alt="{{ test.title }}">
+                    <div class="card-body">
+                        <h5 class="card-title">{{ test.title }}</h5>
+                        <div class="d-flex align-items-center">
+                            <svg width="16" height="16" fill="none">
+                                <path fill-rule="evenodd" clip-rule="evenodd" d="M9.593 6.432a.5.5 0 0 0 0-.864L1.085.605a.5.5 0 0 0-.752.431v9.928a.5.5 0 0 0 .752.431l8.508-4.963Z" fill="#75787B"/>
+                            </svg>
+                            <span class="ms-1">{{ test.views }}</span>
+                        </div>
+                    </div>
+                </a>
             </div>
         </div>
         {% endfor %}
     </div>
-</div>
+    {% else %}
+    <div class="alert alert-info">
+        <p>최신 테스트가 없습니다. 새 테스트를 추가해보세요!</p>
+    </div>
+    {% endif %}
+</section>
 
-<!-- 광고 배너 -->
-<div class="ad-banner">
-    <img src="{% static 'images/ad-banner.jpg' %}" alt="광고" width="478" height="100">
-</div>
-
-<!-- 이번주 인기 TOP 12 -->
-<div class="popular-tests">
-    <div class="section-header d-flex justify-content-between align-items-center">
-        <h2 class="section-title">
-            <span class="section-icon">🔥</span>이번주 인기 TOP 12
-        </h2>
+<section class="popular-tests mb-5">
+    <div class="d-flex justify-content-between align-items-center mb-3">
+        <h2 class="section-title">🔥 인기 TOP 12</h2>
     </div>
     
-    <div class="popular-list">
-        {% for i in "1234567"|make_list %}
-        <div class="popular-item">
-            <div class="rank-number">{{ forloop.counter }}</div>
-            <div class="popular-thumb">
-                <img src="{% static 'images/test-placeholder.jpg' %}" alt="테스트 이미지">
-            </div>
-            <div class="popular-info">
-                <div class="popular-title">오징어 테스트</div>
-                <div class="popular-view-count">
-                    <svg width="12" height="12" viewBox="0 0 16 16" fill="none" class="me-1">
-                        <path fill-rule="evenodd" clip-rule="evenodd" d="M9.593 6.432a.5.5 0 0 0 0-.864L1.085.605a.5.5 0 0 0-.752.431v9.928a.5.5 0 0 0 .752.431l8.508-4.963Z" fill="#75787B"/>
-                    </svg>
-                    <span>358.6만</span>
+    {% if popular_tests %}
+    <div class="row">
+        {% for test in popular_tests %}
+        <div class="col-md-6 mb-3">
+            <a href="{% url 'test_detail' test.slug %}" class="text-decoration-none">
+                <div class="d-flex align-items-center">
+                    <div class="flex-shrink-0 me-3">
+                        <img src="{{ test.thumbnail.url }}" alt="{{ test.title }}" width="75" height="105">
+                    </div>
+                    <div class="flex-grow-1">
+                        <h6 class="mb-1">{{ forloop.counter }}</h6>
+                        <p class="mb-1">{{ test.title }}</p>
+                        <div class="d-flex align-items-center">
+                            <svg width="14" height="14" fill="none">
+                                <path fill-rule="evenodd" clip-rule="evenodd" d="M9.593 6.432a.5.5 0 0 0 0-.864L1.085.605a.5.5 0 0 0-.752.431v9.928a.5.5 0 0 0 .752.431l8.508-4.963Z" fill="#75787B"/>
+                            </svg>
+                            <span class="ms-1">{{ test.views }}</span>
+                        </div>
+                    </div>
                 </div>
-            </div>
+            </a>
         </div>
         {% endfor %}
     </div>
-</div>
+    {% else %}
+    <div class="alert alert-info">
+        <p>인기 테스트가 없습니다. 테스트를 추가하고 사용자들이 방문하면 이곳에 표시됩니다!</p>
+    </div>
+    {% endif %}
+</section>
+
+<section class="categories mb-5">
+    <div class="d-flex justify-content-between align-items-center mb-3">
+        <h2 class="section-title">🐝🐝🐝 새롱 시리즈</h2>
+        <a href="{% url 'test_list' %}" class="btn btn-sm btn-outline-primary">더보기</a>
+    </div>
+    
+    {% if categories %}
+    <div class="row row-cols-2 row-cols-md-3 row-cols-lg-5 g-4">
+        {% for category in categories %}
+        <div class="col">
+            <a href="{% url 'category_detail' category.slug %}" class="text-decoration-none">
+                <div class="card h-100">
+                    {% if category.image %}
+                    <img src="{{ category.image.url }}" class="card-img-top" alt="{{ category.name }}">
+                    {% endif %}
+                    <div class="card-body text-center">
+                        <h5 class="card-title">{{ category.name }}</h5>
+                    </div>
+                </div>
+            </a>
+        </div>
+        {% endfor %}
+    </div>
+    {% else %}
+    <div class="alert alert-info">
+        <p>카테고리가 없습니다. 관리자 페이지에서 카테고리를 추가해보세요!</p>
+    </div>
+    {% endif %}
+</section>
 {% endblock %}
