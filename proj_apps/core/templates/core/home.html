@@ -2,134 +2,154 @@
 {% load static %}
 
 {% block content %}
-<div class="hero-section mb-5">
+<div class="container py-4">
+
     {% if featured_tests %}
-    <div id="carouselExampleCaptions" class="carousel slide" data-bs-ride="carousel">
-        <div class="carousel-inner">
-            {% for test in featured_tests %}
-            <div class="carousel-item {% if forloop.first %}active{% endif %}">
-                <img src="{{ test.thumbnail.url }}" class="d-block w-100" alt="{{ test.title }}">
-                <div class="carousel-caption d-none d-md-block">
-                    <h2>{{ test.title }}</h2>
-                    <p>{{ test.description|truncatewords:20 }}</p>
-                    <a href="{% url 'test_detail' test.slug %}" class="btn btn-primary">테스트 하러가기</a>
+    <div class="hero-section mb-5">
+        <div id="carouselExampleCaptions" class="carousel slide" data-bs-ride="carousel">
+            <div class="carousel-inner">
+                {% for test in featured_tests %}
+                <div class="carousel-item {% if forloop.first %}active{% endif %}">
+                    {% if test.thumbnail %}
+                    <img src="{{ test.thumbnail.url }}" class="d-block w-100" alt="{{ test.title }}">
+                    {% else %}
+                    <div class="bg-secondary d-block w-100" style="height: 300px;"></div>
+                    {% endif %}
+                    <div class="carousel-caption d-none d-md-block">
+                        <h2>{{ test.title }}</h2>
+                        <p>{{ test.description|truncatewords:20 }}</p>
+                        {% if test.slug %}
+                        <a href="{% url 'test_detail' test.slug %}" class="btn btn-primary">테스트 하러가기</a>
+                        {% endif %}
+                    </div>
+                </div>
+                {% endfor %}
+            </div>
+            <button class="carousel-control-prev" type="button" data-bs-target="#carouselExampleCaptions" data-bs-slide="prev">
+                <span class="carousel-control-prev-icon" aria-hidden="true"></span>
+                <span class="visually-hidden">Previous</span>
+            </button>
+            <button class="carousel-control-next" type="button" data-bs-target="#carouselExampleCaptions" data-bs-slide="next">
+                <span class="carousel-control-next-icon" aria-hidden="true"></span>
+                <span class="visually-hidden">Next</span>
+            </button>
+        </div>
+    </div>
+    {% endif %}
+
+    <section class="recent-tests mb-5">
+        <div class="d-flex justify-content-between align-items-center mb-3">
+            <h2 class="section-title">😍 최신 심테</h2>
+            <a href="{% url 'test_list' %}" class="btn btn-sm btn-outline-primary">더보기</a>
+        </div>
+        
+        {% if recent_tests %}
+        <div class="row row-cols-2 row-cols-md-3 row-cols-lg-6 g-3">
+            {% for test in recent_tests %}
+            <div class="col">
+                <div class="card h-100">
+                    {% if test.slug %}
+                    <a href="{% url 'test_detail' test.slug %}" class="text-decoration-none">
+                    {% else %}
+                    <a href="#" class="text-decoration-none">
+                    {% endif %}
+                        {% if test.thumbnail %}
+                        <img src="{{ test.thumbnail.url }}" class="card-img-top" alt="{{ test.title }}">
+                        {% else %}
+                        <div class="bg-light card-img-top" style="height: 120px;"></div>
+                        {% endif %}
+                        <div class="card-body">
+                            <h5 class="card-title">{{ test.title }}</h5>
+                            <div class="d-flex align-items-center">
+                                <svg width="16" height="16" fill="none">
+                                    <path fill-rule="evenodd" clip-rule="evenodd" d="M9.593 6.432a.5.5 0 0 0 0-.864L1.085.605a.5.5 0 0 0-.752.431v9.928a.5.5 0 0 0 .752.431l8.508-4.963Z" fill="#75787B"/>
+                                </svg>
+                                <span class="ms-1">{{ test.views }}</span>
+                            </div>
+                        </div>
+                    </a>
                 </div>
             </div>
             {% endfor %}
         </div>
-        <button class="carousel-control-prev" type="button" data-bs-target="#carouselExampleCaptions" data-bs-slide="prev">
-            <span class="carousel-control-prev-icon" aria-hidden="true"></span>
-            <span class="visually-hidden">Previous</span>
-        </button>
-        <button class="carousel-control-next" type="button" data-bs-target="#carouselExampleCaptions" data-bs-slide="next">
-            <span class="carousel-control-next-icon" aria-hidden="true"></span>
-            <span class="visually-hidden">Next</span>
-        </button>
-    </div>
-    {% else %}
-    <div class="alert alert-info text-center">
-        <p>현재 추천 테스트가 없습니다. 새 테스트를 추가해보세요!</p>
-    </div>
-    {% endif %}
-</div>
+        {% else %}
+        <div class="alert alert-info">
+            <p>등록된 테스트가 없습니다. 관리자 페이지에서 테스트를 추가해보세요!</p>
+        </div>
+        {% endif %}
+    </section>
 
-<section class="recent-tests mb-5">
-    <div class="d-flex justify-content-between align-items-center mb-3">
-        <h2 class="section-title">😍 최신 심테</h2>
-        <a href="{% url 'test_list' %}" class="btn btn-sm btn-outline-primary">더보기</a>
-    </div>
-    
-    {% if recent_tests %}
-    <div class="row row-cols-2 row-cols-md-3 row-cols-lg-6 g-3">
-        {% for test in recent_tests %}
-        <div class="col">
-            <div class="card h-100">
+    {% if popular_tests %}
+    <section class="popular-tests mb-5">
+        <div class="d-flex justify-content-between align-items-center mb-3">
+            <h2 class="section-title">🔥 인기 TOP</h2>
+        </div>
+        
+        <div class="row">
+            {% for test in popular_tests %}
+            <div class="col-md-6 mb-3">
+                {% if test.slug %}
                 <a href="{% url 'test_detail' test.slug %}" class="text-decoration-none">
-                    <img src="{{ test.thumbnail.url }}" class="card-img-top" alt="{{ test.title }}">
-                    <div class="card-body">
-                        <h5 class="card-title">{{ test.title }}</h5>
-                        <div class="d-flex align-items-center">
-                            <svg width="16" height="16" fill="none">
-                                <path fill-rule="evenodd" clip-rule="evenodd" d="M9.593 6.432a.5.5 0 0 0 0-.864L1.085.605a.5.5 0 0 0-.752.431v9.928a.5.5 0 0 0 .752.431l8.508-4.963Z" fill="#75787B"/>
-                            </svg>
-                            <span class="ms-1">{{ test.views }}</span>
+                {% else %}
+                <a href="#" class="text-decoration-none">
+                {% endif %}
+                    <div class="d-flex align-items-center">
+                        <div class="flex-shrink-0 me-3">
+                            {% if test.thumbnail %}
+                            <img src="{{ test.thumbnail.url }}" alt="{{ test.title }}" width="75" height="105">
+                            {% else %}
+                            <div class="bg-light" style="width: 75px; height: 105px;"></div>
+                            {% endif %}
+                        </div>
+                        <div class="flex-grow-1">
+                            <h6 class="mb-1">{{ forloop.counter }}</h6>
+                            <p class="mb-1">{{ test.title }}</p>
+                            <div class="d-flex align-items-center">
+                                <svg width="14" height="14" fill="none">
+                                    <path fill-rule="evenodd" clip-rule="evenodd" d="M9.593 6.432a.5.5 0 0 0 0-.864L1.085.605a.5.5 0 0 0-.752.431v9.928a.5.5 0 0 0 .752.431l8.508-4.963Z" fill="#75787B"/>
+                                </svg>
+                                <span class="ms-1">{{ test.views }}</span>
+                            </div>
                         </div>
                     </div>
                 </a>
             </div>
+            {% endfor %}
         </div>
-        {% endfor %}
-    </div>
-    {% else %}
-    <div class="alert alert-info">
-        <p>최신 테스트가 없습니다. 새 테스트를 추가해보세요!</p>
-    </div>
+    </section>
     {% endif %}
-</section>
 
-<section class="popular-tests mb-5">
-    <div class="d-flex justify-content-between align-items-center mb-3">
-        <h2 class="section-title">🔥 인기 TOP 12</h2>
-    </div>
-    
-    {% if popular_tests %}
-    <div class="row">
-        {% for test in popular_tests %}
-        <div class="col-md-6 mb-3">
-            <a href="{% url 'test_detail' test.slug %}" class="text-decoration-none">
-                <div class="d-flex align-items-center">
-                    <div class="flex-shrink-0 me-3">
-                        <img src="{{ test.thumbnail.url }}" alt="{{ test.title }}" width="75" height="105">
-                    </div>
-                    <div class="flex-grow-1">
-                        <h6 class="mb-1">{{ forloop.counter }}</h6>
-                        <p class="mb-1">{{ test.title }}</p>
-                        <div class="d-flex align-items-center">
-                            <svg width="14" height="14" fill="none">
-                                <path fill-rule="evenodd" clip-rule="evenodd" d="M9.593 6.432a.5.5 0 0 0 0-.864L1.085.605a.5.5 0 0 0-.752.431v9.928a.5.5 0 0 0 .752.431l8.508-4.963Z" fill="#75787B"/>
-                            </svg>
-                            <span class="ms-1">{{ test.views }}</span>
+    {% if categories %}
+    <section class="categories mb-5">
+        <div class="d-flex justify-content-between align-items-center mb-3">
+            <h2 class="section-title">🐝🐝🐝 카테고리</h2>
+            <a href="{% url 'test_list' %}" class="btn btn-sm btn-outline-primary">더보기</a>
+        </div>
+        
+        <div class="row row-cols-2 row-cols-md-3 row-cols-lg-5 g-4">
+            {% for category in categories %}
+            <div class="col">
+                {% if category.slug %}
+                <a href="{% url 'category_detail' category.slug %}" class="text-decoration-none">
+                {% else %}
+                <a href="#" class="text-decoration-none">
+                {% endif %}
+                    <div class="card h-100">
+                        {% if category.image %}
+                        <img src="{{ category.image.url }}" class="card-img-top" alt="{{ category.name }}">
+                        {% else %}
+                        <div class="bg-light card-img-top" style="height: 120px;"></div>
+                        {% endif %}
+                        <div class="card-body text-center">
+                            <h5 class="card-title">{{ category.name }}</h5>
                         </div>
                     </div>
-                </div>
-            </a>
+                </a>
+            </div>
+            {% endfor %}
         </div>
-        {% endfor %}
-    </div>
-    {% else %}
-    <div class="alert alert-info">
-        <p>인기 테스트가 없습니다. 테스트를 추가하고 사용자들이 방문하면 이곳에 표시됩니다!</p>
-    </div>
+    </section>
     {% endif %}
-</section>
 
-<section class="categories mb-5">
-    <div class="d-flex justify-content-between align-items-center mb-3">
-        <h2 class="section-title">🐝🐝🐝 새롱 시리즈</h2>
-        <a href="{% url 'test_list' %}" class="btn btn-sm btn-outline-primary">더보기</a>
-    </div>
-    
-    {% if categories %}
-    <div class="row row-cols-2 row-cols-md-3 row-cols-lg-5 g-4">
-        {% for category in categories %}
-        <div class="col">
-            <a href="{% url 'category_detail' category.slug %}" class="text-decoration-none">
-                <div class="card h-100">
-                    {% if category.image %}
-                    <img src="{{ category.image.url }}" class="card-img-top" alt="{{ category.name }}">
-                    {% endif %}
-                    <div class="card-body text-center">
-                        <h5 class="card-title">{{ category.name }}</h5>
-                    </div>
-                </div>
-            </a>
-        </div>
-        {% endfor %}
-    </div>
-    {% else %}
-    <div class="alert alert-info">
-        <p>카테고리가 없습니다. 관리자 페이지에서 카테고리를 추가해보세요!</p>
-    </div>
-    {% endif %}
-</section>
+</div>
 {% endblock %}
